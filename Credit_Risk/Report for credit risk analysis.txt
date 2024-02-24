@@ -1,0 +1,60 @@
+# credit-risk-classification
+## Overview of the Analysis
+
+* The purpose of the analysis
+  * The purpose of this analysis is to build a loan risk prediction model that can effectively evaluate the creditworthiness of borrowers seeking loans. Using a historical peer-to-peer lending dataset, machine learning techniques will be leveraged to train and test a model that can predict the probability of a borrower defaulting on a loan.
+    
+* Financial information of the data
+  * The historical lending dataset provides information such as loan size, interest rate, borrower income, debt to income, number of accounts, derogatory marks, and total debt.
+    The credit worthiness of borrowers is to be predicted using the label loan_status.
+    
+* Information about the variables we are trying to predict using value_counts
+  * This is not a balanced dataset. We can tell by looking at the count of examples for each class:
+    * Class 0 (loan_status = 0): 75036 examples
+    * Class 1 (loan_status = 1): 2500 examples
+* The stages of the machine learning process
+   * The lending history data is loaded and preprocessed to extract the features and target variable ?loan_status?. The data is then split into separate training and test sets. Initial analysis shows the target variable classes are highly imbalanced, with the ?healthy? loans (assigned 0) comprising 75036 examples and the ?high-risk? loans (assigned 1) comprising just 2500 examples.
+
+* A logistic regression model is initially trained on the imbalanced training data. Model performance is then evaluated on the held-out test set using overall metrics like accuracy, as well as a confusion matrix and classification report to provide deeper per-class metrics including precision and recall.
+* Resampling techniques are utilized to mitigate the known training data class imbalance issue so the model can predict both high-risk and healthy loans effectively. To handle this skew, the training data is resampled using the RandomOverSampler technique. This oversamples the minority high-risk loan examples to balance out the target variable distribution. The retrained model is re-evaluated to determine impact.
+
+* Resampling method
+  * To address the class imbalance problem, the training data is resampled using the RandomOverSampler technique to generate a balanced distribution between healthy and high-risk loans. A second logistic regression model is trained on this balanced dataset and evaluated again more fairly on the test set. This analysis aims to determine whether balancing the training data can improve model performance on the minority high-risk loan class.
+  * The key focus is effectively handling the known target class imbalance in the lending data in order to train a model that can accurately predict both healthy and high-risk loans in testing. The resampling and second model aims to mitigate the imbalance issue.
+
+## Results
+
+* Machine Learning Model 1: Logistic regression with original data
+  *     precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00     18759
+           1       0.87      0.89      0.88       625
+
+    accuracy                           0.99     19384
+   macro avg       0.94      0.94      0.94     19384
+weighted avg       0.99      0.99      0.99     19384
+
+    * From the classification report it is seen that the logistic regression model performs very well for class 0 (healthy loan). The precision is 1.00, recall is 1.00 and f1-score is 1.00, The model performs moderately well to classify the class 1 
+      (high-risk loan) labels, with comparatively lower precision(0.87), recall (0.89) and f1-score(0.88). Accuracy is very high at 0.99. This means overall the model classifies loans correctly 99% of the time.
+
+* Machine Learning Model 2:Logistic regression with resampled data
+  *      precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00     18759
+           1       0.87      1.00      0.93       625
+
+    accuracy                           1.00     19384
+   macro avg       0.94      1.00      0.96     19384
+weighted avg       1.00      1.00      1.00     19384
+
+   * From the classification report of resampled data it is seen that the model still perfectly identifies all actual healthy loans.
+     For class 0 (healthy loan): Precision, recall and F1 score remain perfect at 1.00. 
+     For class 1 (high-risk loan): Precision is slightly reduced to 0.87, but recall and F1 score have increased to 1.00 and 0.93.
+     This indicates that while there may be some more false positives predicted, the model now identifies all actual high risk loans correctly with no false negatives. The accuracy is still very high at 1.00 overall.
+
+## Summary
+
+* Two models were evaluated on the imbalanced loan dataset. Performance was perfect for class 0 (healthy loans) in both models. For minority class 1 (high-risk loans), the second model showed improvement:
+Recall increased from 0.89 to 1.00, meaning the model now identifies all actual high-risk loans with no false negatives missed. Precision dropped slightly from 0.87 to 0.85 to achieve the improved recall.
+F1-score boosted from 0.88 to 0.93 with the large recall gain.Overall accuracy remained perfect at 1.00 for both models.
+* In summary, Both models correctly classified nearly all healthy loans.  But the second model was much better at finding high-risk loans. It was able to identify all true high-risk loans without missing any.This is very important because high-risk loans are rare but must be caught. Even though there were fewer high-risk loan examples to learn from, the second model found all of these risky cases. This shows that the second model performed better overall, especially on the rare but crucial high-risk loans. Its performance was improved by dealing with the uneven class sizes so more high-risk loans would be detected. Finding all risky loans matters more here than false alarms. So by correctly flagging 100% of the real high-risk loans, the second model is superior for this business need.
